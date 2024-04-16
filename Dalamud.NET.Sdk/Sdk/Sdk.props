@@ -1,0 +1,44 @@
+<Project>
+  <Import Project="$(MSBuildThisFileDirectory)\SdkPackageVersions.props" />
+
+  <PropertyGroup>
+    <UsingDalamudNETSdk>true</UsingDalamudNETSdk>
+
+    <!-- Determines if we should import Microsoft.NET.Sdk, if it wasn't already imported. -->
+    <DalamudSdkImportsMicrosoftNetSdk Condition=" '$(UsingMicrosoftNETSdk)' != 'true' ">true</DalamudSdkImportsMicrosoftNetSdk>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Configurations>Debug;ExportDebug;ExportRelease</Configurations>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+
+    <DalamudProjectDir Condition=" '$(DalamudProjectDir)' == '' ">$(MSBuildProjectDirectory)</DalamudProjectDir>
+    <DalamudProjectDir>$([MSBuild]::EnsureTrailingSlash('$(DalamudProjectDir)'))</DalamudProjectDir>
+    <DalamudProjectDirBase64 Condition=" $([MSBuild]::VersionGreaterThanOrEquals($(MSBuildAssemblyVersion), '17.3')) ">$([MSBuild]::ConvertToBase64('$(DalamudProjectDir)'))</DalamudProjectDirBase64>
+  </PropertyGroup>
+
+  <Target Condition=" $([MSBuild]::VersionLessThan($(MSBuildAssemblyVersion), '17.3')) " Name="DalamudProjectDir" BeforeTargets="Build">
+    <Error Text="Cannot build from path containing '%23', move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%23'))" /> <!-- # -->
+    <Error Text="Cannot build from path containing '%3B', move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%3B'))" /> <!-- ; -->
+    <Error Text="Cannot build from path containing newlines, move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%0A'))" /> <!-- \n -->
+    <Error Text="Cannot build from path containing newlines, move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%0D'))" /> <!-- \r -->
+  </Target>
+
+  <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" Condition=" '$(DalamudSdkImportsMicrosoftNetSdk)' == 'true' " />
+
+  <PropertyGroup>
+    <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
+  </PropertyGroup>
+
+  <!--
+  The Microsoft.NET.Sdk only understands of the Debug and Release configurations.
+  We need to set the following properties manually for ExportDebug and ExportRelease.
+  -->
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' or '$(Configuration)' == 'ExportDebug' ">
+    <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
+    <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'ExportRelease' ">
+    <Optimize Condition=" '$(Optimize)' == '' ">true</Optimize>
+  </PropertyGroup>
+</Project>
