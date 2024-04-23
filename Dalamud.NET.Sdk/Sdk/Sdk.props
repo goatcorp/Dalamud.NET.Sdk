@@ -18,10 +18,14 @@
   </PropertyGroup>
 
   <Target Condition=" $([MSBuild]::VersionLessThan($(MSBuildAssemblyVersion), '17.3')) " Name="DalamudProjectDir" BeforeTargets="Build">
-    <Error Text="Cannot build from path containing '%23', move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%23'))" /> <!-- # -->
-    <Error Text="Cannot build from path containing '%3B', move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%3B'))" /> <!-- ; -->
-    <Error Text="Cannot build from path containing newlines, move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%0A'))" /> <!-- \n -->
-    <Error Text="Cannot build from path containing newlines, move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%0D'))" /> <!-- \r -->
+    <Error Text="Cannot build from path containing '%23', move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%23'))" />
+    <!-- # -->
+    <Error Text="Cannot build from path containing '%3B', move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%3B'))" />
+    <!-- ; -->
+    <Error Text="Cannot build from path containing newlines, move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%0A'))" />
+    <!-- \n -->
+    <Error Text="Cannot build from path containing newlines, move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%0D'))" />
+    <!-- \r -->
   </Target>
 
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" Condition=" '$(DalamudSdkImportsMicrosoftNetSdk)' == 'true' " />
@@ -30,15 +34,41 @@
     <EnableDefaultNoneItems>false</EnableDefaultNoneItems>
   </PropertyGroup>
 
-  <!--
-  The Microsoft.NET.Sdk only understands of the Debug and Release configurations.
-  We need to set the following properties manually for ExportDebug and ExportRelease.
-  -->
-  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' or '$(Configuration)' == 'ExportDebug' ">
-    <DebugSymbols Condition=" '$(DebugSymbols)' == '' ">true</DebugSymbols>
-    <Optimize Condition=" '$(Optimize)' == '' ">false</Optimize>
+  <!-- Resolve Dalamud installation, updated through XIVLauncher -->
+  <PropertyGroup>
+    <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Windows'))">$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+    <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('Linux'))">$(HOME)/.xlcore/dalamud/Hooks/dev/</DalamudLibPath>
+    <DalamudLibPath Condition="$([MSBuild]::IsOSPlatform('OSX'))">$(HOME)/Library/Application Support/XIV on Mac/dalamud/Hooks/dev/</DalamudLibPath>
+    <DalamudLibPath Condition="$(DALAMUD_HOME) != ''">$(DALAMUD_HOME)/</DalamudLibPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)' == 'ExportRelease' ">
-    <Optimize Condition=" '$(Optimize)' == '' ">true</Optimize>
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Platforms>x64</Platforms>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <AssemblySearchPaths>$(AssemblySearchPaths);$(DalamudLibPath)</AssemblySearchPaths>
   </PropertyGroup>
+
+  <!-- Required NuGet packages -->
+  <ItemGroup>
+    <PackageReference Include="DalamudPackager" Version="$(PackageVersion_DalamudPackager)" />
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.1.1" PrivateAssets="All" />
+  </ItemGroup>
+
+  <!-- Required assembly references shipped via Dalamud -->
+  <ItemGroup>
+    <Reference Include="FFXIVClientStructs" Private="false" />
+    <Reference Include="Newtonsoft.Json" Private="false" />
+    <Reference Include="Dalamud" Private="false" />
+    <Reference Include="ImGui.NET" Private="false" />
+    <Reference Include="ImGuiScene" Private="false" />
+    <Reference Include="Lumina" Private="false" />
+    <Reference Include="Lumina.Excel" Private="false" />
+  </ItemGroup>
 </Project>
