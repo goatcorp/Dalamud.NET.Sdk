@@ -17,17 +17,6 @@
     <DalamudProjectDirBase64 Condition=" $([MSBuild]::VersionGreaterThanOrEquals($(MSBuildAssemblyVersion), '17.3')) ">$([MSBuild]::ConvertToBase64('$(DalamudProjectDir)'))</DalamudProjectDirBase64>
   </PropertyGroup>
 
-  <Target Condition=" $([MSBuild]::VersionLessThan($(MSBuildAssemblyVersion), '17.3')) " Name="DalamudProjectDir" BeforeTargets="Build">
-    <Error Text="Cannot build from path containing '%23', move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%23'))" />
-    <!-- # -->
-    <Error Text="Cannot build from path containing '%3B', move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%3B'))" />
-    <!-- ; -->
-    <Error Text="Cannot build from path containing newlines, move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%0A'))" />
-    <!-- \n -->
-    <Error Text="Cannot build from path containing newlines, move your project or update dotnet to the latest version." Condition="$(DalamudProjectDir.Contains('%0D'))" />
-    <!-- \r -->
-  </Target>
-
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.props" Condition=" '$(DalamudSdkImportsMicrosoftNetSdk)' == 'true' " />
 
   <PropertyGroup>
