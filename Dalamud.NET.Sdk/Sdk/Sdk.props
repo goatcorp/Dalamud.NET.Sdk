@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <Configurations>Debug;ExportDebug;ExportRelease</Configurations>
+    <Configurations>Debug;Release</Configurations>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
 
     <DalamudProjectDir Condition=" '$(DalamudProjectDir)' == '' ">$(MSBuildProjectDirectory)</DalamudProjectDir>
