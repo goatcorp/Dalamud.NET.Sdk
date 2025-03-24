@@ -69,6 +69,7 @@
     <Reference Include="ImGuiScene" Private="false" />
 
     <Reference Include="FFXIVClientStructs" Condition="'$(Use_Dalamud_FFXIVClientStructs)' == 'true'" Private="false" />
+    <Reference Include="InteropGenerator.Runtime" Condition="'$(Use_Dalamud_FFXIVClientStructs)' == 'true'" Private="false" />
     <Reference Include="Newtonsoft.Json" Condition="'$(Use_Dalamud_Newtonsoft_Json)' == 'true'" Private="false" />
     <Reference Include="Lumina" Condition="'$(Use_Dalamud_Lumina)' == 'true'" Private="false" />
     <Reference Include="Lumina.Excel" Condition="'$(Use_Dalamud_Lumina_Excel)' == 'true'" Private="false" />
