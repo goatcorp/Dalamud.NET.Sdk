@@ -33,7 +33,13 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0-windows</TargetFramework>
+
+    <!-- Required for VS to force an x64 configuration into the Solution -->
+    <Platforms>x64</Platforms>
+
+    <!-- Required to indicate that this project must always build with the x64 configuration -->
     <PlatformTarget>x64</PlatformTarget>
+
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
