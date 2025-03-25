@@ -2,7 +2,7 @@
 
 <!-- Versions -->
 <PropertyGroup>
-    <PackageVersion_Dalamud_NET_Sdk>12.0.1</PackageVersion_Dalamud_NET_Sdk>
+    <PackageVersion_Dalamud_NET_Sdk>12.0.2</PackageVersion_Dalamud_NET_Sdk>
     <PackageVersion_DalamudPackager>12.0.0</PackageVersion_DalamudPackager>
 </PropertyGroup>
 
