@@ -71,7 +71,9 @@
   <ItemGroup>
     <!-- Dalamud and ImGui.NET always need to come from us -->
     <Reference Include="Dalamud" Private="false" />
-    <Reference Include="ImGui.NET" Private="false" />
+    <Reference Include="Dalamud.Bindings.ImGui" Private="false" />
+    <Reference Include="Dalamud.Bindings.ImPlot" Private="false" />
+    <Reference Include="Dalamud.Bindings.ImGuizmo" Private="false" />
     <Reference Include="ImGuiScene" Private="false" />
 
     <Reference Include="FFXIVClientStructs" Condition="'$(Use_Dalamud_FFXIVClientStructs)' == 'true'" Private="false" />
