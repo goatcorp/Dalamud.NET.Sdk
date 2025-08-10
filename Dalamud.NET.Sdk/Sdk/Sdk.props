@@ -59,6 +59,7 @@
     <Use_Dalamud_Lumina Condition="'$(Use_Dalamud_Lumina)' == ''">true</Use_Dalamud_Lumina>
     <Use_Dalamud_Lumina_Excel Condition="'$(Use_Dalamud_Lumina_Excel)' == ''">true</Use_Dalamud_Lumina_Excel>
     <Use_Dalamud_Serilog Condition="'$(Use_Dalamud_Serilog)' == ''">true</Use_Dalamud_Serilog>
+    <Use_Dalamud_ImGui Condition="'$(Use_Dalamud_ImGui)' == ''">true</Use_Dalamud_ImGui>
   </PropertyGroup>
 
   <!-- Required NuGet packages -->
@@ -71,10 +72,10 @@
   <ItemGroup>
     <!-- Dalamud and ImGui.NET always need to come from us -->
     <Reference Include="Dalamud" Private="false" />
-    <Reference Include="Dalamud.Bindings.ImGui" Private="false" />
-    <Reference Include="Dalamud.Bindings.ImPlot" Private="false" />
-    <Reference Include="Dalamud.Bindings.ImGuizmo" Private="false" />
-    <Reference Include="ImGuiScene" Private="false" />
+    <Reference Include="Dalamud.Bindings.ImGui" Condition="'$(Use_Dalamud_ImGui)' == 'true'" Private="false" />
+    <Reference Include="Dalamud.Bindings.ImPlot" Condition="'$(Use_Dalamud_ImGui)' == 'true'" Private="false" />
+    <Reference Include="Dalamud.Bindings.ImGuizmo" Condition="'$(Use_Dalamud_ImGui)' == 'true'" Private="false" />
+    <Reference Include="ImGuiScene" Condition="'$(Use_Dalamud_ImGui)' == 'true'" Private="false" />
 
     <Reference Include="FFXIVClientStructs" Condition="'$(Use_Dalamud_FFXIVClientStructs)' == 'true'" Private="false" />
     <Reference Include="InteropGenerator.Runtime" Condition="'$(Use_Dalamud_FFXIVClientStructs)' == 'true'" Private="false" />
