@@ -33,6 +33,7 @@
 
   <PropertyGroup>
     <TargetFramework>net10.0-windows</TargetFramework>
+    <LangVersion>14.0</LangVersion>
 
     <!-- Required for VS to force an x64 configuration into the Solution -->
     <Platforms>x64</Platforms>
@@ -41,7 +42,6 @@
     <PlatformTarget>x64</PlatformTarget>
 
     <Nullable>enable</Nullable>
-    <LangVersion>latest</LangVersion>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
