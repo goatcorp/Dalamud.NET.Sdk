@@ -2,8 +2,8 @@
 
 <!-- Versions -->
 <PropertyGroup>
-    <PackageVersion_Dalamud_NET_Sdk>14.0.0</PackageVersion_Dalamud_NET_Sdk>
-    <PackageVersion_DalamudPackager>14.0.0</PackageVersion_DalamudPackager>
+    <PackageVersion_Dalamud_NET_Sdk>14.0.1</PackageVersion_Dalamud_NET_Sdk>
+    <PackageVersion_DalamudPackager>14.0.1</PackageVersion_DalamudPackager>
 </PropertyGroup>
 
 </Project>
