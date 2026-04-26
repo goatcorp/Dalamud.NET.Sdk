@@ -64,7 +64,6 @@
 
     <!-- Opt-in since this requires a network request -->
     <Warn_Outdated_Sdk Condition="'$(Warn_Outdated_Sdk)' == ''">false</Warn_Outdated_Sdk>
-    <Warn_Outdated_Sdk_Cache_Hours Condition="'$(Warn_Outdated_Sdk_Cache_Hours)' == ''">24</Warn_Outdated_Sdk_Cache_Hours>
   </PropertyGroup>
 
   <!-- Required NuGet packages -->

@@ -1,29 +1,36 @@
 <Project>
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" Condition=" '$(DalamudSdkImportsMicrosoftNetSdk)' == 'true' " />
 
-  <UsingTask TaskName="DalamudSdkVersionCheck" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+  <UsingTask TaskName="NuGetVersionCheck" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
     <ParameterGroup>
       <SourceUrl ParameterType="System.String" Required="true" />
-      <CacheFilePath ParameterType="System.String" Required="true" />
-      <CacheHours ParameterType="System.Double" Required="true" />
       <LatestVersion ParameterType="System.String" Output="true" />
     </ParameterGroup>
     <Task>
       <Using Namespace="System" />
-      <Using Namespace="System.IO" />
+      <Using Namespace="System.Linq" />
       <Using Namespace="System.Net.Http" />
       <Code Type="Fragment" Language="cs">
         <![CDATA[
         LatestVersion = "";
         try {
-            var dir = Path.GetDirectoryName(CacheFilePath);
-            if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-            var stale = !File.Exists(CacheFilePath) || (DateTime.UtcNow - File.GetLastWriteTimeUtc(CacheFilePath)) > TimeSpan.FromHours(CacheHours);
-            if (stale) File.WriteAllText(CacheFilePath, new HttpClient().GetStringAsync(SourceUrl).GetAwaiter().GetResult());
-            var str = File.ReadAllText(CacheFilePath);
-            const string open = "<PackageVersion_Dalamud_NET_Sdk>", close = "</PackageVersion_Dalamud_NET_Sdk>";
-            var i = str.IndexOf(open, StringComparison.Ordinal); var j = str.IndexOf(close, StringComparison.Ordinal);
-            if (i >= 0 && j > i) LatestVersion = str.Substring(i + open.Length, j - i - open.Length).Trim();
+            var str = new HttpClient().GetStringAsync(SourceUrl).GetAwaiter().GetResult();
+            var key = "\"versions\":";
+            var k = str.IndexOf(key, StringComparison.Ordinal);
+            if (k >= 0) {
+                var lb = str.IndexOf('[', k);
+                var rb = str.IndexOf(']', lb);
+                if (lb >= 0 && rb > lb) {
+                    var slice = str.Substring(lb + 1, rb - lb - 1);
+                    var versions = slice
+                        .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim().Trim('"'))
+                        .Where(x => x.Length > 0)
+                        .ToArray();
+                    if (versions.Length > 0)
+                        LatestVersion = versions[versions.Length - 1];
+                }
+            }
         } catch { }
         ]]>
 	  </Code>
@@ -39,16 +46,14 @@
     <Message Text="Dalamud.NET.Sdk: root at $(DalamudLibPath)" Importance="high" />
   </Target>
 
-  <!-- Optional: warn when the installed SDK is older than master -->
+  <!-- Optional: warn when the installed SDK is older than latest NuGet -->
   <Target Name="CheckDalamudSdkVersion" BeforeTargets="BeforeBuild" Condition="'$(Warn_Outdated_Sdk)' == 'true' Or '$(Warn_Outdated_Sdk)' == 'True'">
     <PropertyGroup>
-      <_DalamudSdkVersionCheckUrl>https://raw.githubusercontent.com/goatcorp/Dalamud.NET.Sdk/master/Dalamud.NET.Sdk/Sdk/SdkPackageVersions.props</_DalamudSdkVersionCheckUrl>
-      <_DalamudSdkVersionCheckFile>$(MSBuildProjectDirectory)\obj\dalamud-sdk-version-check.props</_DalamudSdkVersionCheckFile>
-      <Warn_Outdated_Sdk_Cache_Hours Condition="'$(Warn_Outdated_Sdk_Cache_Hours)' == ''">24</Warn_Outdated_Sdk_Cache_Hours>
+      <_DalamudSdkVersionCheckUrl>https://api.nuget.org/v3-flatcontainer/dalamud.net.sdk/index.json</_DalamudSdkVersionCheckUrl>
     </PropertyGroup>
-    <DalamudSdkVersionCheck SourceUrl="$(_DalamudSdkVersionCheckUrl)" CacheFilePath="$(_DalamudSdkVersionCheckFile)" CacheHours="$(Warn_Outdated_Sdk_Cache_Hours)">
+    <NuGetVersionCheck SourceUrl="$(_DalamudSdkVersionCheckUrl)">
       <Output TaskParameter="LatestVersion" PropertyName="_DalamudSdkLatestVer" />
-    </DalamudSdkVersionCheck>
+    </NuGetVersionCheck>
     <Warning
       Condition="'$(_DalamudSdkLatestVer)' != '' AND '$(PackageVersion_Dalamud_NET_Sdk)' != '' AND '$(_DalamudSdkLatestVer)' != '$(PackageVersion_Dalamud_NET_Sdk)'"
       Text="Outdated Dalamud.NET.Sdk: Current version is $(PackageVersion_Dalamud_NET_Sdk), latest version is $(_DalamudSdkLatestVer)." />
