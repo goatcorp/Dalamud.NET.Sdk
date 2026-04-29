@@ -1,6 +1,42 @@
 <Project>
   <Import Sdk="Microsoft.NET.Sdk" Project="Sdk.targets" Condition=" '$(DalamudSdkImportsMicrosoftNetSdk)' == 'true' " />
 
+  <UsingTask TaskName="NuGetVersionCheck" TaskFactory="RoslynCodeTaskFactory" AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+    <ParameterGroup>
+      <SourceUrl ParameterType="System.String" Required="true" />
+      <LatestVersion ParameterType="System.String" Output="true" />
+    </ParameterGroup>
+    <Task>
+      <Using Namespace="System" />
+      <Using Namespace="System.Linq" />
+      <Using Namespace="System.Net.Http" />
+      <Code Type="Fragment" Language="cs">
+        <![CDATA[
+        LatestVersion = "";
+        try {
+            var str = new HttpClient().GetStringAsync(SourceUrl).GetAwaiter().GetResult();
+            var key = "\"versions\":";
+            var k = str.IndexOf(key, StringComparison.Ordinal);
+            if (k >= 0) {
+                var lb = str.IndexOf('[', k);
+                var rb = str.IndexOf(']', lb);
+                if (lb >= 0 && rb > lb) {
+                    var slice = str.Substring(lb + 1, rb - lb - 1);
+                    var versions = slice
+                        .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => x.Trim().Trim('"'))
+                        .Where(x => x.Length > 0)
+                        .ToArray();
+                    if (versions.Length > 0)
+                        LatestVersion = versions[versions.Length - 1];
+                }
+            }
+        } catch { }
+        ]]>
+	  </Code>
+    </Task>
+  </UsingTask>
+
   <!-- Fail the build if the folder at DalamudLibPath doesn't exist -->
   <Target Name="EnsureDalamudLibPathExists" BeforeTargets="BeforeBuild">
     <Error Text="Dalamud.NET.Sdk: Dalamud installation not found at $(DalamudLibPath)" Condition="!Exists('$(DalamudLibPath)')" />
@@ -8,5 +44,18 @@
 
   <Target Name="PrintRootPath" BeforeTargets="BeforeBuild">
     <Message Text="Dalamud.NET.Sdk: root at $(DalamudLibPath)" Importance="high" />
+  </Target>
+
+  <!-- Optional: warn when the installed SDK is older than latest NuGet -->
+  <Target Name="CheckDalamudSdkVersion" BeforeTargets="BeforeBuild" Condition="'$(Warn_Outdated_Sdk)' == 'true' Or '$(Warn_Outdated_Sdk)' == 'True'">
+    <PropertyGroup>
+      <_DalamudSdkVersionCheckUrl>https://api.nuget.org/v3-flatcontainer/dalamud.net.sdk/index.json</_DalamudSdkVersionCheckUrl>
+    </PropertyGroup>
+    <NuGetVersionCheck SourceUrl="$(_DalamudSdkVersionCheckUrl)">
+      <Output TaskParameter="LatestVersion" PropertyName="_DalamudSdkLatestVer" />
+    </NuGetVersionCheck>
+    <Warning
+      Condition="'$(_DalamudSdkLatestVer)' != '' AND '$(PackageVersion_Dalamud_NET_Sdk)' != '' AND '$(_DalamudSdkLatestVer)' != '$(PackageVersion_Dalamud_NET_Sdk)'"
+      Text="Outdated Dalamud.NET.Sdk: Current version is $(PackageVersion_Dalamud_NET_Sdk), latest version is $(_DalamudSdkLatestVer)." />
   </Target>
 </Project>

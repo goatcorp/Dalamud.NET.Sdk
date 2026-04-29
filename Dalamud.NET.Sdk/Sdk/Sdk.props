@@ -61,6 +61,9 @@
     <Use_Dalamud_Serilog Condition="'$(Use_Dalamud_Serilog)' == ''">true</Use_Dalamud_Serilog>
     <Use_Dalamud_ImGui Condition="'$(Use_Dalamud_ImGui)' == ''">true</Use_Dalamud_ImGui>
     <Use_Dalamud_MSObjectPool Condition="'$(Use_Dalamud_MSObjectPool)' == ''">true</Use_Dalamud_MSObjectPool>
+
+    <!-- Opt-in since this requires a network request -->
+    <Warn_Outdated_Sdk Condition="'$(Warn_Outdated_Sdk)' == ''">false</Warn_Outdated_Sdk>
   </PropertyGroup>
 
   <!-- Required NuGet packages -->
