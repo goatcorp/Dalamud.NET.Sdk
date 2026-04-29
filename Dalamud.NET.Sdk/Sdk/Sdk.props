@@ -74,6 +74,7 @@
     <!-- Dalamud always needs to come from us -->
     <Reference Include="Dalamud" Private="false" />
 
+    <Reference Include="Dalamud.Bindings.ImAnim" Condition="'$(Use_Dalamud_ImGui)' == 'true'" Private="false" />
     <Reference Include="Dalamud.Bindings.ImGui" Condition="'$(Use_Dalamud_ImGui)' == 'true'" Private="false" />
     <Reference Include="Dalamud.Bindings.ImPlot" Condition="'$(Use_Dalamud_ImGui)' == 'true'" Private="false" />
     <Reference Include="Dalamud.Bindings.ImGuizmo" Condition="'$(Use_Dalamud_ImGui)' == 'true'" Private="false" />
