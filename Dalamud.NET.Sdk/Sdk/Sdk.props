@@ -65,8 +65,8 @@
 
   <!-- Required NuGet packages -->
   <ItemGroup>
-    <PackageReference Include="DalamudPackager" Condition="'$(Use_DalamudPackager)' == 'true'" Version="$(PackageVersion_DalamudPackager)" />
-    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.39" PrivateAssets="All" />
+    <PackageReference Include="DalamudPackager" Condition="'$(Use_DalamudPackager)' == 'true'" Version="$(PackageVersion_DalamudPackager)" IsImplicitlyDefined="true" />
+    <PackageReference Include="DotNet.ReproducibleBuilds" Version="1.2.39" PrivateAssets="All" IsImplicitlyDefined="true" />
   </ItemGroup>
 
   <!-- Required assembly references shipped via Dalamud -->
